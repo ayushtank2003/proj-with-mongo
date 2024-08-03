@@ -11,7 +11,7 @@ const server = app.listen(port,()=>{
     
 });
 
-const DB =mongoose.connect("mongodb+srv://ayush:kLtVxBEhSTu3ZFIq@cluster0.lqes229.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0").then(()=>{
+const DB =mongoose.connect("").then(()=>{
     console.log("connect to database");
     
 });
