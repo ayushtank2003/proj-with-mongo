@@ -3,7 +3,7 @@ const{
     getUserById, 
     createUser, 
     updateUserById, 
-    deleteUserById
+    deleteUserById,
 }=require("../controller/userController");
 
 const userRouter = express.Router();
@@ -13,4 +13,4 @@ userRouter.post("/",createUser);//create a new user
 userRouter.patch("/:id",updateUserById); //update all by id 
 userRouter.delete("/:id",deleteUserById); // delete user by id 
 
-module.exports=userRouter
+module.exports=userRouter;
