@@ -1,7 +1,16 @@
 const express = require("express");
+const{
+    getUserById, 
+    createUser, 
+    updateUserById, 
+    deleteUserById
+}=require("../controller/userController");
+
 const userRouter = express.Router();
 
-userRouter.get("/:id");//get all by id 
-userRouter.post("/");//create a new user
-userRouter.patch("/:id"); //update all by id 
-userRouter.delete("/:id"); // delete user by id 
+userRouter.get("/:id",getUserById);//get all by id 
+userRouter.post("/",createUser);//create a new user
+userRouter.patch("/:id",updateUserById); //update all by id 
+userRouter.delete("/:id",deleteUserById); // delete user by id 
+
+module.exports=userRouter
