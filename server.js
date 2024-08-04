@@ -1,8 +1,10 @@
 const express =require("express");
-const mongoose =require("mongoose") 
+const dotenv = require("dotenv");
+dotenv.config({path:"./.env"});
+const mongoose =require("mongoose") ;
 const userRouter = require("./routes/userRouter");
 const app = express();
-const port=8000;
+const port=8080;
 
 app.use("/user",  userRouter);
 
@@ -11,8 +13,16 @@ const server = app.listen(port,()=>{
     
 });
 
-const DB =mongoose.connect("").then(()=>{
-    console.log("connect to database");
-    
-});
+const DB_URL=process.env.DB_URL.replace (
+    "<password>",
+    process.env.DB_PASSWORD
+);
+
+const DB=mongoose.connect(DB_URL)
+  .then(() => {
+    console.log("Connected to database");
+  })
+  .catch((err) => {
+    console.error("Database connection error:", err);
+  });
 
