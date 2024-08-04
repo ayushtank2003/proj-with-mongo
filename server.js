@@ -4,6 +4,8 @@ dotenv.config({path:"./.env"});
 const mongoose =require("mongoose") ;
 const userRouter = require("./routes/userRouter");
 const app = express();
+app.use(express.json());
+
 const port=8080;
 
 app.use("/user",  userRouter);
@@ -20,7 +22,7 @@ const DB_URL=process.env.DB_URL.replace (
 
 const DB=mongoose.connect(DB_URL)
   .then(() => {
-    console.log("Connected to database");
+    console.log("Connected to database ");
   })
   .catch((err) => {
     console.error("Database connection error:", err);
