@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    ussername:{
+    username:{
         required:[true,"please Provide a username"],
         type:String,
         unique:true,
@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
         required:[true,"please Provide a email"],
         validate: {
             validator: function(v) {
-                 return validator.validate("v");
+                 return validator.validate(v);
             },
             message:"Please provide a valid email",
         },
