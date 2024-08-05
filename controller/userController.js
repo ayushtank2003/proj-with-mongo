@@ -1,36 +1,106 @@
 const UserModel=require("../models/userModels");
 
-exports.getUserById=function(req,res){
-    res.status(200).send("you hit getUserByID");
+exports.getAllUser=async function(req,res) {
+    let users;
+    try{
+        users = await UserModel.find().select("-__v");//if we not await this this will be a query  itself 
+        //to wait for his proper execution we should wait for this then only this will be a model
+    }catch(err){
+        res.status(500).json({
+            status:"fail",
+            message:err.message,
+        });
+        return;
+    }
+    res.status(200).json({
+        status:"success",
+        count:users.length,
+        data:users,
+    });
+};
+
+exports.getUserById=async function(req,res){
+    const{id}=req.params;
+    let user;
+    try{
+        user = await UserModel.findById(id).select("-__v");
+    }catch(err){
+        res.status(500).json({
+            status:"fail",
+            message:err.message,
+        });
+        return;
+    }
+    res.status(200).json({
+        status:"success",
+        data:user,
+    });
 };
 
 exports.createUser=async function (req,res){
-    const{username ,password, email}=req.body;
+    const{username ,password, email,role}=req.body;
+    let user;
     try{
-        await UserModel.create({username,password,email});
+       user= await UserModel.create({username,
+        email,
+        password,
+        role
+    });
     } catch(err){
         res.status(500).send({
             status:"faiure",
             error:err.message,
         })
+        return;
    }
      
-    res.status(200).send({
+    res.status(201).send({
         status:"success",
-        data:"user created successfully",
+        data:user,
     });
 };
 
 
-exports.updateUserById=function(req,res){
-    res.status(200).send("you hit updateUserByID");
+exports.updateUserById=async function(req,res){
+    const {id}=req.params;
+    const{username, email,password,role}=req.body;
+    let newUser;
+    try{
+        newUser = await UserModel.findByIdAndUpdate(id , {
+            username,
+            email,
+            password,
+            role,
+        },{
+            new:true,
+        });
+    } catch(err){
+        res.status(500).send({
+            status:"faiure",
+            error:err.message,
+        })
+        return;
+    }
+    res.status(201).send({
+        status:"success",
+        data:newUser,
+    });
 };
 
-exports.deleteUserById=function(req,res){
-    res.status(200).send("you hit deleteUserByID");
+exports.deleteUserById=async function(req,res){
+    const {id}=req.params;
+    try{
+        await UserModel.findByIdAndDelete(id);
+    }catch(err){
+        res.status(500).send({
+            status:"faiure",
+            error:err.message,
+        })
+        return;
+    }
+    res.status(201).send({
+        status:"success",
+        data:`User with id:${id} deleted succesfully`,
+
+    });
 };
-
-
-
-
-

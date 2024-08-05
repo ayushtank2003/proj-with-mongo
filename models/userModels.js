@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
+const validator = require("email-validator");
 
 const userSchema = new mongoose.Schema({
     username:{
         required:[true,"please Provide a username"],
         type:String,
-        unique:true,
     },
     password:{
         required:[true,"please Provide a password"],
@@ -14,16 +14,16 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:[true,"please Provide a email"],
         validate: {
-            validator: function(v) {
-                 return validator.validate(v);
+            validator: function (v) {
+                return validator.validate(v);
             },
             message:"Please provide a valid email",
         },
-        unique:true,
     },
-    createdAt  :{
-        type:Date,
-        default:Date.now(),
+    role:{
+        type:String,
+        enum:["user","admin","owner"],
+        default:"user",
     },
 });
 
