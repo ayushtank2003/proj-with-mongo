@@ -18,6 +18,7 @@ const DB=mongoose.connect(DB_URL , { useNewUrlParser: true, useUnifiedTopology: 
     // Access the 'users' collection through the default connection
     const db = mongoose.connection;
 
+
     try {
         // Drop the specific index if it exists
         await db.collection('users').dropIndex('ussername_1');

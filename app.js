@@ -8,4 +8,12 @@ app.use(express.json());
 
 app.use("/user",  userRouter);
 
+
+app.all("*",(req,res)=>{
+    res.status(404).json({
+        status:"error",
+        message:`can't find ${ req.originalUrl} on this server`,
+    });
+});
+
 module.exports=app; 

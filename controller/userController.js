@@ -1,5 +1,6 @@
 const UserModel=require("../models/userModels");
 
+
 exports.getAllUser=async function(req,res) {
     let users;
     try{
@@ -103,4 +104,24 @@ exports.deleteUserById=async function(req,res){
         data:`User with id:${id} deleted succesfully`,
 
     });
+};
+
+exports.authorizeUser = async function(req,res,next){
+    const {password:passwordInHeader}=req.headers;
+    const{id}=req.params;
+
+    // I will search the user in db
+    const user=await UserModel.findById(id);
+    //compare the DB password with the provided in header
+    if (user.password == passwordInHeader){
+        next();
+    } else{
+        //return 401 unauthorized
+        res.status(401).json({
+            status:"fail",
+            message:`you are not authorized to perform this operation`,
+        });
+        return;
+    }
+
 };
