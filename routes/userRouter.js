@@ -1,4 +1,3 @@
-const express = require("express");
 const{
     getAllUser,
     getUserById, 
@@ -9,7 +8,7 @@ const{
 }=require("../controller/userController");
 
 const userRouter = express.Router();
-
+const express = require("express");
 
 userRouter.get("/",getAllUser);//get all user
 userRouter.get("/:id",getUserById);//get all by id 
