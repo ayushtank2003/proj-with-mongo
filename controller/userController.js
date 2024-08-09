@@ -116,12 +116,19 @@ exports.authorizeUser = async function(req,res,next){
     if (user.password == passwordInHeader){
         next();
     } else{
-        //return 401 unauthorized
-        res.status(401).json({
-            status:"fail",
-            message:`you are not authorized to perform this operation`,
-        });
-        return;
+        let err = new Error();
+        err.statusCode=401;
+        err.message=`you are not authorized to perform this operation`;
+        err.status="fail";
+        next(err)
+         
+
+        // //return 401 unauthorized
+        // res.status(401).json({
+        //     status:"fail",
+        //     message:`you are not authorized to perform this operation`,
+        // });
+        // return;
     }
 
 };
