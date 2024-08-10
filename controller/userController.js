@@ -1,134 +1,72 @@
 const UserModel=require("../models/userModels");
+const {CatchAsync}=require("../errorHandling/utils")
 
+exports.getAllUser = CatchAsync(async (req, res, next) => {
+    const users = await UserModel.find().select("-__v");
+    res.status(200).json({
+        status: "success",
+        count: users.length,
+        data: users,
+    });
+});
 
-exports.getAllUser=async function(req,res) {
-    let users;
-    try{
-        users = await UserModel.find().select("-__v");//if we not await this this will be a query  itself 
-        //to wait for his proper execution we should wait for this then only this will be a model
-    }catch(err){
-        res.status(500).json({
-            status:"fail",
-            message:err.message,
-        });
-        return;
+exports.getUserById = CatchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const user = await UserModel.findById(id).select("-__v");
+    if (!user) {
+        return next(new AppError(`User ID ${id} not found`, 404));// this will tranfer this to globle errie handler
     }
     res.status(200).json({
-        status:"success",
-        count:users.length,
-        data:users,
+        status: "success",
+        data: user,
     });
-};
+});
 
-exports.getUserById=async function(req,res){
-    const{id}=req.params;
-    let user;
-    try{
-        user = await UserModel.findById(id).select("-__v");
-    }catch(err){
-        res.status(500).json({
-            status:"fail",
-            message:err.message,
-        });
-        return;
+exports.createUser = CatchAsync(async (req, res, next) => {
+    const { username, password, email, role } = req.body;
+    const user = await UserModel.create({ username, email, password, role });
+    res.status(201).json({
+        status: "success",
+        data: user,
+    });
+});
+
+exports.updateUserById = CatchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const { username, email, password, role } = req.body;
+    const newUser = await UserModel.findByIdAndUpdate(
+        id,
+        { username, email, password, role },
+        { new: true, runValidators: true }
+    );
+    if (!newUser) {
+        return next(new AppError(`User ID ${id} not found`, 404));
     }
     res.status(200).json({
-        status:"success",
-        data:user,
+        status: "success",
+        data: newUser,
     });
-};
+});
 
-exports.createUser=async function (req,res){
-    const{username ,password, email,role}=req.body;
-    let user;
-    try{
-       user= await UserModel.create({username,
-        email,
-        password,
-        role
-    });
-    } catch(err){
-        res.status(500).send({
-            status:"faiure",
-            error:err.message,
-        })
-        return;
-   }
-     
-    res.status(201).send({
-        status:"success",
-        data:user,
-    });
-};
-
-
-exports.updateUserById=async function(req,res){
-    const {id}=req.params;
-    const{username, email,password,role}=req.body;
-    let newUser;
-    try{
-        newUser = await UserModel.findByIdAndUpdate(id , {
-            username,
-            email,
-            password,
-            role,
-        },{
-            new:true,
-        });
-    } catch(err){
-        res.status(500).send({
-            status:"faiure",
-            error:err.message,
-        })
-        return;
+exports.deleteUserById = CatchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const user = await UserModel.findByIdAndDelete(id);
+    if  (!user) {
+        return next(new AppError(`User ID ${id} not found`, 404));
     }
-    res.status(201).send({
-        status:"success",
-        data:newUser,
+    res.status(204).json({
+        status: "success",
+        data: null,
     });
-};
+});
 
-exports.deleteUserById=async function(req,res){
-    const {id}=req.params;
-    try{
-        await UserModel.findByIdAndDelete(id);
-    }catch(err){
-        res.status(500).send({
-            status:"faiure",
-            error:err.message,
-        })
-        return;
+exports.authorizeUser = CatchAsync(async (req, res, next) => {
+    const { password: passwordInHeader } = req.headers;
+    const { id } = req.params;
+
+    const user = await UserModel.findById(id);
+    if (!user || user.password !== passwordInHeader) {
+        return next(new AppError(`You are not authorized to perform this operation`, 401));
     }
-    res.status(201).send({
-        status:"success",
-        data:`User with id:${id} deleted succesfully`,
-
-    });
-};
-
-exports.authorizeUser = async function(req,res,next){
-    const {password:passwordInHeader}=req.headers;
-    const{id}=req.params;
-
-    // I will search the user in db
-    const user=await UserModel.findById(id);
-    //compare the DB password with the provided in header
-    if (user.password == passwordInHeader){
-        next();
-    } else{
-        let err = new Error();
-        err.statusCode=401;
-        err.message=`you are not authorized to perform this operation`;
-        err.status="fail";
-        next(err)
-         
-
-        // //return 401 unauthorized
-        // res.status(401).json({
-        //     status:"fail",
-        //     message:`you are not authorized to perform this operation`,
-        // });
-        // return;
-    }
-
-};
+    next();
+});
