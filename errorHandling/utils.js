@@ -1,6 +1,11 @@
 // utils.js
-exports.CatchAsync = fn => {
-    return (req, res, next) => {
-        fn(req, res, next).catch(next);
+exports.CatchAsync = (fn)  => {
+    return async (req, res, next) => {
+        try{
+            await fn(req, res, next);
+        }catch(err){
+            next(err);
+            return;
+        }
     };
 };
